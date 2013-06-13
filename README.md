@@ -32,6 +32,10 @@ Attributes
 * `node["tomcat"]["deploy_manager_apps"]` - whether to deploy manager apps, default `true`.
 * `node["tomcat"]["authbind"]` - whether to bind tomcat on lower port numbers, default `no`.
 * `node["tomcat"]["tomcat_auth"]` -
+* `node["tomcat"]["local_packages"]` - An array of local package filenames to use to override the typical Tomcat install packages. The default is [].
+* `node["tomcat"]["local_packages_provider"]` - The provider used to install local packages. The default is Chef::Provider::Package.
+* `node["tomcat"]["local_packages_base_dir"]` - The base directory of the local packages. The default is Chef::Config[:file_cache_path].
+* `node["tomcat"]["local_packages_base_url"]` - The base URL used to fetch any local packages before installing them. The default is nil. If a base URL is not provided any local packages must be present on the system before running tomcat::default.
 * `node["tomcat"]["user"]` -
 * `node["tomcat"]["group"]` -
 * `node["tomcat"]["home"]` -

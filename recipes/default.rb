@@ -22,19 +22,34 @@
 
 include_recipe "java"
 
-tomcat_pkgs = value_for_platform(
-  ["debian","ubuntu"] => {
-    "default" => ["tomcat#{node["tomcat"]["base_version"]}","tomcat#{node["tomcat"]["base_version"]}-admin"]
-  },
-  ["centos","redhat","fedora"] => {
-    "default" => ["tomcat#{node["tomcat"]["base_version"]}","tomcat#{node["tomcat"]["base_version"]}-admin-webapps"]
-  },
-  "default" => ["tomcat#{node["tomcat"]["base_version"]}"]
-)
-
-tomcat_pkgs.each do |pkg|
-  package pkg do
-    action :install
+if node["tomcat"]["local_packages"]
+  node["tomcat"]["local_packages"].each do |pkg|
+    if node['tomcat']['local_packages_base_url']
+      remote_file "#{node['tomcat']['local_packages_base_dir']}/#{pkg}" do
+        source "#{node['tomcat']['local_packages_base_url']}/#{pkg}"
+        action :create_if_missing
+      end
+    end
+    package pkg do
+      source "#{node['tomcat']['local_packages_base_dir']}/#{pkg}"
+      provider node["tomcat"]["local_packages_provider"]
+      action :install
+    end
+  end
+else
+  pkgs = value_for_platform(
+    ["debian","ubuntu"] => {
+      "default" => ["tomcat#{node["tomcat"]["base_version"]}","tomcat#{node["tomcat"]["base_version"]}-admin"]
+    },
+    ["centos","redhat","fedora"] => {
+      "default" => ["tomcat#{node["tomcat"]["base_version"]}","tomcat#{node["tomcat"]["base_version"]}-admin-webapps"]
+    },
+    "default" => ["tomcat#{node["tomcat"]["base_version"]}"]
+  )
+  pkgs.each do |pkg|
+    package pkg do
+      action :install
+    end
   end
 end
 
@@ -108,7 +123,7 @@ template "#{node["tomcat"]["config_dir"]}/server.xml" do
   notifies :restart, "service[tomcat]"
 end
 
-template "/etc/tomcat#{node['tomcat']['base_version']}/logging.properties" do
+template "#{node["tomcat"]["config_dir"]}/logging.properties" do
   source "logging.properties.erb"
   owner "root"
   group "root"

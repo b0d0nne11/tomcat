@@ -42,6 +42,10 @@ default["tomcat"]["truststore_type"] = "jks"
 default["tomcat"]["certificate_dn"] = "cn=localhost"
 default["tomcat"]["loglevel"] = "INFO"
 default["tomcat"]["tomcat_auth"] = "true"
+default["tomcat"]["local_packages"] = []
+default["tomcat"]["local_packages_provider"] = Chef::Provider::Package
+default["tomcat"]["local_packages_base_dir"] = Chef::Config[:file_cache_path]
+default["tomcat"]["local_packages_base_url"] = nil
 
 case node['platform']
 when "centos","redhat","fedora"
