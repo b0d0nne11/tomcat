@@ -22,21 +22,14 @@
 
 include_recipe "java"
 
-tomcat_pkgs = value_for_platform(
-  ["debian","ubuntu"] => {
-    "default" => ["tomcat#{node["tomcat"]["base_version"]}","tomcat#{node["tomcat"]["base_version"]}-admin"]
-  },
-  ["centos","redhat","fedora"] => {
-    "default" => ["tomcat#{node["tomcat"]["base_version"]}","tomcat#{node["tomcat"]["base_version"]}-admin-webapps"]
-  },
-  "default" => ["tomcat#{node["tomcat"]["base_version"]}"]
-)
+include_recipe "tomcat::install_#{node['tomcat']['install_source']}"
 
-tomcat_pkgs.each do |pkg|
-  package pkg do
-    action :install
-  end
-end
+service_to_notify = case node['tomcat']['install_source']
+                    when 'binary'
+                      'runit_service[tomcat]'
+                    else
+                      'service[tomcat]'
+                    end
 
 directory node['tomcat']['endorsed_dir'] do
   mode "0755"
@@ -60,17 +53,6 @@ unless node['tomcat']['deploy_manager_apps']
   end
 end
 
-service "tomcat" do
-  service_name "tomcat#{node["tomcat"]["base_version"]}"
-  case node["platform"]
-  when "centos","redhat","fedora"
-    supports :restart => true, :status => true
-  when "debian","ubuntu"
-    supports :restart => true, :reload => false, :status => true
-  end
-  action [:enable, :start]
-end
-
 node.set_unless['tomcat']['keystore_password'] = secure_password
 node.set_unless['tomcat']['truststore_password'] = secure_password
 
@@ -82,39 +64,20 @@ unless node['tomcat']["truststore_file"].nil?
   node.set['tomcat']['java_options'] = java_options
 end
 
-case node["platform"]
-when "centos","redhat","fedora"
-  template "/etc/sysconfig/tomcat#{node["tomcat"]["base_version"]}" do
-    source "sysconfig_tomcat6.erb"
-    owner "root"
-    group "root"
-    mode "0644"
-    notifies :restart, "service[tomcat]"
-  end
-else
-  template "/etc/default/tomcat#{node["tomcat"]["base_version"]}" do
-    source "default_tomcat6.erb"
-    owner "root"
-    group "root"
-    mode "0644"
-    notifies :restart, "service[tomcat]"
-  end
-end
-
 template "#{node["tomcat"]["config_dir"]}/server.xml" do
   source "server.xml.erb"
   owner "root"
   group "root"
   mode "0644"
-  notifies :restart, "service[tomcat]"
+  notifies :restart, service_to_notify
 end
 
-template "/etc/tomcat#{node['tomcat']['base_version']}/logging.properties" do
+template "#{node['tomcat']['config_dir']}/logging.properties" do
   source "logging.properties.erb"
   owner "root"
   group "root"
   mode "0644"
-  notifies :restart, "service[tomcat]"
+  notifies :restart, service_to_notify
 end
 
 unless node['tomcat']["ssl_cert_file"].nil?
@@ -144,7 +107,7 @@ unless node['tomcat']["ssl_cert_file"].nil?
        -password pass:#{node['tomcat']['keystore_password']} \
        -out #{node['tomcat']['keystore_file']}
     EOH
-    notifies :restart, "service[tomcat]"
+    notifies :restart, service_to_notify
     creates "#{node['tomcat']['config_dir']}/#{node['tomcat']['keystore_file']}"
   end
 else
@@ -154,7 +117,7 @@ else
     umask 0007
     creates "#{node['tomcat']['config_dir']}/#{node['tomcat']['keystore_file']}"
     action :run
-    notifies :restart, "service[tomcat]"
+    notifies :restart, service_to_notify
   end
 end
 

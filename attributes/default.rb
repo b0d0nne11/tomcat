@@ -17,6 +17,14 @@
 # limitations under the License.
 
 default["tomcat"]["base_version"] = 6
+default["tomcat"]["full_version"] = '6.0.37'
+
+default['tomcat']['install_source'] = 'binary'
+
+default['tomcat']['install_binary']['url'] = "http://apache.osuosl.org/tomcat/tomcat-#{node['tomcat']['base_version']}/v#{node['tomcat']['full_version']}/bin/apache-tomcat-#{node['tomcat']['full_version']}.tar.gz"
+default['tomcat']['install_binary']['prefix_root'] = '/opt'
+default['tomcat']['install_binary']['prefix_home'] = '/opt'
+
 default["tomcat"]["port"] = 8080
 default["tomcat"]["proxy_port"] = nil
 default["tomcat"]["ssl_port"] = 8443
@@ -43,47 +51,66 @@ default["tomcat"]["certificate_dn"] = "cn=localhost"
 default["tomcat"]["loglevel"] = "INFO"
 default["tomcat"]["tomcat_auth"] = "true"
 
-case node['platform']
-when "centos","redhat","fedora"
-  default["tomcat"]["user"] = "tomcat"
-  default["tomcat"]["group"] = "tomcat"
-  default["tomcat"]["home"] = "/usr/share/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["base"] = "/usr/share/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["config_dir"] = "/etc/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["log_dir"] = "/var/log/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["tmp_dir"] = "/var/cache/tomcat#{node["tomcat"]["base_version"]}/temp"
-  default["tomcat"]["work_dir"] = "/var/cache/tomcat#{node["tomcat"]["base_version"]}/work"
-  default["tomcat"]["context_dir"] = "#{node["tomcat"]["config_dir"]}/Catalina/localhost"
-  default["tomcat"]["webapp_dir"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}/webapps"
-  default["tomcat"]["keytool"] = "/usr/lib/jvm/java/bin/keytool"
-  default["tomcat"]["lib_dir"] = "#{node["tomcat"]["home"]}/lib"
-  default["tomcat"]["endorsed_dir"] = "#{node["tomcat"]["lib_dir"]}/endorsed"
-when "debian","ubuntu"
-  default["tomcat"]["user"] = "tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["group"] = "tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["home"] = "/usr/share/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["base"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["config_dir"] = "/etc/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["log_dir"] = "/var/log/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["tmp_dir"] = "/tmp/tomcat#{node["tomcat"]["base_version"]}-tmp"
-  default["tomcat"]["work_dir"] = "/var/cache/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["context_dir"] = "#{node["tomcat"]["config_dir"]}/Catalina/localhost"
-  default["tomcat"]["webapp_dir"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}/webapps"
-  default["tomcat"]["keytool"] = "/usr/lib/jvm/default-java/bin/keytool"
-  default["tomcat"]["lib_dir"] = "#{node["tomcat"]["home"]}/lib"
-  default["tomcat"]["endorsed_dir"] = "#{node["tomcat"]["lib_dir"]}/endorsed"
-else
-  default["tomcat"]["user"] = "tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["group"] = "tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["home"] = "/usr/share/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["base"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["config_dir"] = "/etc/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["log_dir"] = "/var/log/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["tmp_dir"] = "/tmp/tomcat#{node["tomcat"]["base_version"]}-tmp"
-  default["tomcat"]["work_dir"] = "/var/cache/tomcat#{node["tomcat"]["base_version"]}"
-  default["tomcat"]["context_dir"] = "#{node["tomcat"]["config_dir"]}/Catalina/localhost"
-  default["tomcat"]["webapp_dir"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}/webapps"
-  default["tomcat"]["keytool"] = "keytool"
-  default["tomcat"]["lib_dir"] = "#{node["tomcat"]["home"]}/lib"
-  default["tomcat"]["endorsed_dir"] = "#{node["tomcat"]["lib_dir"]}/endorsed"
+if node['tomcat']['install_source'] == 'package'
+  case node['platform']
+  when "centos","redhat","fedora"
+    default["tomcat"]["user"] = "tomcat"
+    default["tomcat"]["group"] = "tomcat"
+    default["tomcat"]["home"] = "/usr/share/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["base"] = "/usr/share/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["config_dir"] = "/etc/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["log_dir"] = "/var/log/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["tmp_dir"] = "/var/cache/tomcat#{node["tomcat"]["base_version"]}/temp"
+    default["tomcat"]["work_dir"] = "/var/cache/tomcat#{node["tomcat"]["base_version"]}/work"
+    default["tomcat"]["context_dir"] = "#{node["tomcat"]["config_dir"]}/Catalina/localhost"
+    default["tomcat"]["webapp_dir"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}/webapps"
+    default["tomcat"]["keytool"] = "/usr/lib/jvm/java/bin/keytool"
+    default["tomcat"]["lib_dir"] = "#{node["tomcat"]["home"]}/lib"
+    default["tomcat"]["endorsed_dir"] = "#{node["tomcat"]["lib_dir"]}/endorsed"
+  when "debian","ubuntu"
+    default["tomcat"]["user"] = "tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["group"] = "tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["home"] = "/usr/share/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["base"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["config_dir"] = "/etc/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["log_dir"] = "/var/log/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["tmp_dir"] = "/tmp/tomcat#{node["tomcat"]["base_version"]}-tmp"
+    default["tomcat"]["work_dir"] = "/var/cache/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["context_dir"] = "#{node["tomcat"]["config_dir"]}/Catalina/localhost"
+    default["tomcat"]["webapp_dir"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}/webapps"
+    default["tomcat"]["keytool"] = "/usr/lib/jvm/default-java/bin/keytool"
+    default["tomcat"]["lib_dir"] = "#{node["tomcat"]["home"]}/lib"
+    default["tomcat"]["endorsed_dir"] = "#{node["tomcat"]["lib_dir"]}/endorsed"
+  else
+    default["tomcat"]["user"] = "tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["group"] = "tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["home"] = "/usr/share/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["base"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["config_dir"] = "/etc/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["log_dir"] = "/var/log/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["tmp_dir"] = "/tmp/tomcat#{node["tomcat"]["base_version"]}-tmp"
+    default["tomcat"]["work_dir"] = "/var/cache/tomcat#{node["tomcat"]["base_version"]}"
+    default["tomcat"]["context_dir"] = "#{node["tomcat"]["config_dir"]}/Catalina/localhost"
+    default["tomcat"]["webapp_dir"] = "/var/lib/tomcat#{node["tomcat"]["base_version"]}/webapps"
+    default["tomcat"]["keytool"] = "keytool"
+    default["tomcat"]["lib_dir"] = "#{node["tomcat"]["home"]}/lib"
+    default["tomcat"]["endorsed_dir"] = "#{node["tomcat"]["lib_dir"]}/endorsed"
+  end
+end
+
+if node['tomcat']['install_source'] == 'binary'
+  default['tomcat']['user']   = 'tomcat'
+  default['tomcat']['group']  = 'tomcat'
+  default['tomcat']['base']         = '/opt/tomcat'
+  default['tomcat']['home']         = node['tomcat']['base']
+  default['tomcat']['config_dir']   = "#{node['tomcat']['base']}/conf"
+  default['tomcat']['context_dir']  = "#{node['tomcat']['config_dif']}/Catalina/localhost"
+  default['tomcat']['lib_dir']      = "#{node['tomcat']['base']}/lib"
+  default['tomcat']['endorsed_dir'] = "#{node['tomcat']['lib_dir']}/endorsed"
+  default['tomcat']['log_dir']      = "#{node['tomcat']['base']}/logs"
+  default['tomcat']['tmp_dir']      = "#{node['tomcat']['base']}/temp"
+  default['tomcat']['pid']          = "#{node['tomcat']['tmp_dir']}/catalina.pid"
+  default['tomcat']['webapp_dir']   = "#{node['tomcat']['base']}/webapps"
+  default['tomcat']['work_dir']     = "#{node['tomcat']['base']}/work"
+  default['tomcat']['keytool']      = '/usr/lib/jvm/java/bin/keytool'
 end
