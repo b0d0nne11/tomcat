@@ -24,11 +24,43 @@ platforms:
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
 
 suites:
-- name: tomcat6
+- name: tomcat6-package
   run_list: ["recipe[tomcat]"]
-  attributes: {}
+  attributes: {
+    tomcat: {
+      install_source: 'package',
+      base_version: 6,
+      full_version: '6.0.37'
+    }
+  }
 
-- name: tomcat7
+- name: tomcat7-package
   run_list: ["recipe[tomcat]"]
   excludes: ["ubuntu-10.04", "centos-6.4"]
-  attributes: {tomcat: {base_version: 7}}
+  attributes: {
+    tomcat: {
+      install_source: 'package',
+      base_version: 7,
+      full_version: '7.0.42'
+    }
+  }
+
+- name: tomcat6-binary
+  run_list: ["recipe[tomcat]"]
+  attributes: {
+    tomcat: {
+      install_source: 'binary',
+      base_version: 6,
+      full_version: '6.0.37'
+    }
+  }
+
+- name: tomcat7-binary
+  run_list: ["recipe[tomcat]"]
+  attributes: {
+    tomcat: {
+      install_source: 'binary',
+      base_version: 7,
+      full_version: '7.0.42'
+    }
+  }
