@@ -5,4 +5,6 @@ export CATALINA_BASE=<%= node['tomcat']['base'] %>
 export CATALINA_PID=<%= node['tomcat']['pid'] %>
 
 exec 2>&1
-exec chpst -u <%= node['tomcat']['user'] %>:<%= node['tomcat']['group'] %> <%= node['tomcat']['base'] %>/bin/startup.sh
+exec \
+  chpst -u <%= node['tomcat']['user'] %>:<%= node['tomcat']['group'] %> \
+  <%= node['tomcat']['base'] %>/bin/catalina.sh run
