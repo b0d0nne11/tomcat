@@ -25,7 +25,10 @@ platforms:
 
 suites:
 - name: tomcat6-package
-  run_list: ["recipe[tomcat]"]
+  run_list: [
+    "recipe[tomcat]",
+    "recipe[minitest-handler]"
+  ]
   attributes: {
     tomcat: {
       install_source: 'package',
@@ -35,7 +38,10 @@ suites:
   }
 
 - name: tomcat7-package
-  run_list: ["recipe[tomcat]"]
+  run_list: [
+    "recipe[tomcat]",
+    "recipe[minitest-handler]"
+  ]
   excludes: ["ubuntu-10.04", "centos-6.4"]
   attributes: {
     tomcat: {
@@ -46,7 +52,10 @@ suites:
   }
 
 - name: tomcat6-binary
-  run_list: ["recipe[tomcat]"]
+  run_list: [
+    "recipe[tomcat]",
+    "recipe[minitest-handler]"
+  ]
   attributes: {
     tomcat: {
       install_source: 'binary',
@@ -56,7 +65,10 @@ suites:
   }
 
 - name: tomcat7-binary
-  run_list: ["recipe[tomcat]"]
+  run_list: [
+    "recipe[tomcat]",
+    "recipe[minitest-handler]"
+  ]
   attributes: {
     tomcat: {
       install_source: 'binary',
